@@ -1,0 +1,407 @@
+---
+title: "QMM_Final"
+author: "Krupa, Niharika, Vivek"
+date: "2023-12-06"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**Problem Statement**
+
+We have been asked to assign 15 students to a group project. 
+
+Division: The 15 students has been put into five different groups which means each group has 3 students.
+
+We have determined that attendance, experience and GPA are the three main criteria that have a big impact on how well groups complete the project. To get the best results possible on the class project, each of these elements is essential.
+
+**Generating the data**
+
+1) Attendance
+
+```{r}
+set.seed(1)
+Attendance <- round(runif(15, min = 0, max = 30))
+print(Attendance)
+Mean_A <- round(weighted.mean(Attendance))
+Mean_A
+```
+
+
+2) Experience
+
+```{r}
+set.seed(2)
+Experience <- round(runif(15, min = 0, max = 100))
+print(Experience)
+Mean_E <- round(weighted.mean(Experience))
+Mean_E
+```
+
+3) GPA PERCENTAGE
+
+```{r}
+set.seed(3)
+GPA <- round(runif(15, min = 0, max = 100))
+print(GPA)
+Mean_G <- round(weighted.mean(GPA))
+Mean_G
+```
+
+**Creating data frame**
+
+```{r}
+data <- data.frame(student=1:15,Attendance, Experience, GPA)
+data
+
+Average <- rowMeans(data[, c("Attendance", "Experience", "GPA")])
+round(Average)
+
+data$Average <- round(Average)
+data
+```
+
+
+*Creating the table of students along with the factors and their values*
+```{r}
+table <- matrix(c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
+                  8,11,17,27,6,27,28,20,19,2,6,5,21,12,23,
+                  18,70,57,17,94,94,13,83,47,55,55,24,76,18,41,
+                  17,81,38,33,60,60,12,29,58,63,51,51,53,56,87,
+                  14, 54, 37, 26, 53, 60, 18, 44, 41, 40, 37, 27, 50, 29, 50),ncol = 5,byrow = F)
+
+colnames(table) <- c("Student_No","Attendance","Experience","GPA","Average")
+rownames(table) <- c(1:15)
+
+as.table(table)
+```
+
+**Mathematical formulation**
+
+Objective function:
+
+$$ \sum_{i=1}^{15}\sum_{j=1}^5 (F_{1i}+ F_{2i} +F_{3i})/3*X_{ij}, where \: i = 1, 2, 3, 4,5.......,15 \: and  \: j = 1,2,3,4,5$$
+
+
+**constraints**
+
+**Student constraint**
+
+Each student is assigned to exactly one group.
+
+$$ \sum_{j=1}^{5}\ X_{ij} = 1, ∀i $$
+
+**Group constraint**
+
+Each group should have exactly 3 members.
+
+$$ \sum_{i=1}^{15}\ g_{ij} = 3, ∀j $$
+
+**Non-Negativity constraint**
+
+$$Xij ≥ 0,∀i,j$$
+
+
+**Factor constraints**
+
+**Attendance constraint**
+
+The number of hours group members are attending the meetings scheduled for the project.
+
+$$ \sum_{j=1}^{15}Attendace_{j}*X_{ij}  \geq Avg(Attendance), where \: i = 1, 2, 3, 4,5 \: and  \: j = 1,2,3,4, 5, ... , 15, ∀i,j$$
+
+**Experience constraint**
+
+Experience in the related field, their experience is rated from 0 to 100. 1 being the lowest and 10 being the highest.
+
+$$ \sum_{j=1}^{15}Experience_{j}*x_{ij}  \geq Avg(Experience), where \: i = 1, 2, 3, 4, 5 \: and  \: j = 1,2,3,4, 5, ... , 15, ∀i,j$$
+
+**GPA constraint**
+
+The students have been scaled on a percentage from 0 to 100 where 0%  being given to the student with least overall grade and 100% to students with the highest overall grade.
+
+$$ \sum_{j=1}^{15}GPA_{j}*x_{ij}  \geq Avg(GPA), where \: i = 1, 2, 3, 4, 5 \: and  \: j = 1,2,3,4, 5, ... , 15, ∀i,j$$
+
+
+**Mathematical formulation of the constraints**
+
+**Objective function**
+
+$$MaxZ= 14g1x1 + 54g1x2 + 37g1x3 + 26g1x4 + 53g1x5 + 60g1x6 + 18g1x7 + 44g1x8 + 41g1x9 + 40g1x10 +  37g1x11 + 27g1x12 + 50g1x13 + 29g1x14 + 50g1x15 +
+14g2x1 + 54g2x2 + 37g2x3 + 26g2x4 + 53g2x5 + 60g2x6 + 18g2x7 + 44g2x8 + 41g2x9 + 40g2x10 +  37g2x11 + 27g2x12 + 50g2x13 + 29g2x14 + 50g2x15 +
+14g3x1 + 54g3x2 + 37g3x3 + 26g3x4 + 53g3x5 + 60g3x6 + 18g3x7 + 44g3x8 + 41g3x9 + 40g3x10 +  37g3x11 + 27g3x12 + 50g3x13 + 29g3x14 + 50g3x15 +
+14g4x1 + 54g4x2 + 37g4x3 + 26g4x4 + 53g4x5 + 60g4x6 + 18g4x7 + 44g4x8 + 41g4x9 + 40g4x10 +  37g4x11 + 27g4x12 + 50g4x13 + 29g4x14 + 50g4x15 +
+14g5x1 + 54g5x2 + 37g5x3 + 26g5x4 + 53g5x5 + 60g5x6 + 18g5x7 + 44g5x8 + 41g5x9 + 40g5x10 +  37g5x11 + 27g5x12 + 50g5x13 + 29g5x14 + 50g5x15$$
+
+where "g" is group ranging from 1 to 5 and "x" is students ranging from 1 to 15
+
+
+**constraint**
+
+**Group constraint**
+
+$$Group 1: g1x1 + g1x2 + g1x3 + g1x4 + g1x5 + g1x6 + g1x7 + g1x8 + g1x9 + g1x10 + g1x11 + g1x12 + g1x13 + g1x14 + g1x15 = 3$$
+
+$$Group2: g2x1 + g2x2 + g2x3 + g2x4 + g2x5 + g2x6 + g2x7 + g2x8 + g2x9 + g2x10 + g2x11 + g2x12 + g2x13 + g2x14 + g2x15 = 3$$
+
+$$Group3: g3x1 + g3g2 + g3x3 + g3x4 + g3x5 + g3x6 + g3x7 + g3x8 + g3x9 + g3x10 + g3x11 + g3x12 + g3x13 + g3x14 + g3x15 = 3$$
+
+$$Group4: g4x1 + g4g2 + g4x3 + g4x4 + g4x5 + g4x6 + g4x7 + g4x8 + g4x9 + g4x10 + g4x11 + g4x12 + g4x13 + g4x14 + g4x15 = 3$$
+
+$$Group5: g5x1 + g5g2 + g5x3 + g5x4 + g5x5 + g5x6 + g5x7 + g5x8 + g5x9 + g5x10 + g5x11 + g5x12 + g5x13 + g5x14 + g5x15 = 3$$
+
+
+**Attendance constraint**
+
+For group 1: 8g1x1 + 11g1x2 + 17g1x3 + 27g1x4 + 6g1x5 + 27g1x6 + 28g1x7 + 20g1x8 + 19g1x9 + 2g1x10 +  6g1x11 + 5g1x12 + 21g1x13 + 12g1x14 + 23g1x15 >=15
+
+For group 2: 8g2x1 + 11g2x2 + 17g2x3 + 27g2x4 + 6g2x5 + 27g2x6 + 28g2x7 + 20g2x8 + 19g2x9 + 2g2x10 +  6g2x11 + 5g2x12 + 21g2x13 + 12g2x14 + 23g2x15 >=15
+
+For Group 3: 8g3x1 + 11g3x2 + 17g3x3 + 27g3x4 + 6g3x5 + 27g3x6 + 28g3x7 + 20g3x8 + 19g3x9 + 2g3x10 +  6g3x11 + 5g3x12 + 21g3x13 + 12g3x14 + 23g3x15 >=15
+
+For Group 4: 8g4x1 + 11g4x2 + 17g4x3 + 27g4x4 + 6g4x5 + 27g4x6 + 28g4x7 + 20g4x8 + 19g4x9 + 2g4x10 +  6g4x11 + 5g4x12 + 21g4x13 + 12g4x14 + 23g4x15 >=15
+
+For Group 5: 8g5x1 + 11g5x2 + 17g5x3 + 27g5x4 + 6g5x5 + 27g5x6 + 28g5x7 + 20g5x8 + 19g5x9 + 2g5x10 +  6g5x11 + 5g5x12 + 21g5x13 + 12g5x14 + 23g5x15 >=15
+
+
+**Experience constraint**
+
+For Group 1: 18g1x1 + 70g1x2 + 57g1x3 + 17g1x4 + 94g1x5 + 94g1x6 + 13g1x7 + 83g1x8 + 47g1x9 + 55g1x10 +  55g1x11 + 24g1x12 + 76g1x13 + 18g1x14 + 41g1x15 >=51
+
+For Group 2: 18g2x1 + 70g2x2 + 57g2x3 + 17g2x4 + 94g2x5 + 94g2x6 + 13g2x7 + 83g2x8 + 47g2x9 + 55g2x10 +  55g2x11 + 24g2x12 + 76g2x13 + 18g2x14 + 41g2x15 >=51
+
+For group 3: 18g3x1 + 70g3x2 + 57g3x3 + 17g3x4 + 94g3x5 + 94g3x6 + 13g3x7 + 83g3x8 + 47g3x9 + 55g3x10 +  55g3x11 + 24g3x12 + 76g3x13 + 18g3x14 + 41g3x15 >=51
+
+For group 4: 18g4x1 + 70g4x2 + 57g4x3 + 17g4x4 + 94g4x5 + 94g4x6 + 13g4x7 + 83g4x8 + 47g4x9 + 55g4x10 +  55g4x11 + 24g4x12 + 76g4x13 + 18g4x14 + 41g4x15 >=51
+
+For group 5: 18g5x1 + 70g5x2 + 57g5x3 + 17g5x4 + 94g5x5 + 94g5x6 + 13g5x7 + 83g5x8 + 47g5x9 + 55g5x10 +  55g5x11 + 24g5x12 + 76g5x13 + 18g5x14 + 41g5x15 >=51
+
+
+**GPA constraint**
+
+For Group 1: 17g1x1 + 81g1x2 + 38g1x3 + 33g1x4 + 60g1x5 + 60g1x6 + 12g1x7 + 29g1x8 + 58g1x9 + 63g1x10 +  51g1x11 + 51g1x12 + 53g1x13 + 56g1x14 + 87g1x15 >=50
+
+For Group 2: 17g2x1 + 81g2x2 + 38g2x3 + 33g2x4 + 60g2x5 + 60g2x6 + 12g2x7 + 29g2x8 + 58g2x9 + 63g2x10 +  51g2x11 + 51g2x12 + 53g2x13 + 56g2x14 + 87g2x15 >=50
+
+For Group 3: 17g3x1 + 81g3x2 + 38g3x3 + 33g3x4 + 60g3x5 + 60g3x6 + 12g3x7 + 29g3x8 + 58g3x9 + 63g3x10 +  51g3x11 + 51g3x12 + 53g3x13 + 56g3x14 + 87g3x15 >=50
+
+For Group 4: 17g4x1 + 81g4x2 + 38g4x3 + 33g4x4 + 60g4x5 + 60g4x6 + 12g4x7 + 29g4x8 + 58g4x9 + 63g4x10 +  51g4x11 + 51g4x12 + 53g4x13 + 56g4x14 + 87g4x15 >=50
+
+For Group 5: 17g5x1 + 81g5x2 + 38g5x3 + 33g5x4 + 60g5x5 + 60g5x6 + 12g5x7 + 29g5x8 + 58g5x9 + 63g5x10 +  51g5x11 + 51g5x12 + 53g5x13 + 56g5x14 + 87g5x15 >=50
+
+
+**Individual constraint**
+
+1. g1x1+g2x1+g3x1+g4x1+g5x1=1 
+
+2. g1x2+g2x2+g3x2+g4x2+g5x2=1
+
+3. g1x3+g2x3+g3x3+g4x3+g5x3=1
+
+4. g1x4+g2x4+g3x4+g4x4+g5x4=1
+
+5. g1x5+g2x5+g3x5+g4x5+g5x5=1
+
+6. g1x6+g2x6+g3x6+g4x6+g5x6=1
+
+7. g1x7+g2x7+g3x7+g4x7+g5x7=1
+
+8. g1x8+g2x8+g3x8+g4x8+g5x8=1
+
+9. g1x9+g2x9+g3x9+g4x9+g5x9=1
+
+10. g1x10+g2x10+g3x10+g4x10+g5x10=1
+
+11. g1x11+g2x11+g3x11+g4x11+g5x11=1
+
+12. g1x12+g2x12+g3x12+g4x12+g5x12=1
+
+13. g1x13+g2x13+g3x13+g4x13+g5x13=1
+
+14. g1x14+g2x14+g3x14+g4x14+g5x14=1
+
+15. g1x15+g2x15+g3x15+g4x15+g5x15=1
+
+##Solving the problem in R.
+
+### Loading required libraries.
+```{r}
+library(lpSolve)
+library(lpSolveAPI)
+```
+
+### Gemerating a LP problem with both 35 constraints and 75 decision variables
+```{r}
+LP_model <- make.lp(35, 75)
+LP_model
+```
+
+### LP_model is an object that represents the LP problem.
+
+#This statement sets the cofficients for the objective functions seventy five decision variables. It provides a vector containing these coefficients, emphasizing the importance of maintaining a consistent order for both the variables in the objective function and the constraints.
+
+```{r}
+set.objfn(LP_model, c(14, 54, 37, 26, 53, 60, 18, 44, 41, 40, 37, 27, 50, 29, 50,
+                      14, 54, 37, 26, 53, 60, 18, 44, 41, 40, 37, 27, 50, 29, 50,
+                      14, 54, 37, 26, 53, 60, 18, 44, 41, 40, 37, 27, 50, 29, 50,
+                      14, 54, 37, 26, 53, 60, 18, 44, 41, 40, 37, 27, 50, 29, 50,
+                      14, 54, 37, 26, 53, 60, 18, 44, 41, 40, 37, 27, 50, 29, 50))
+```
+
+### By setting the objective sense to "max" this line's aim is to maximize the objective function.
+```{r}
+lp.control(LP_model, sense = 'max')
+```
+
+### Adding constraints to the LP problem.
+
+```{r}
+#Group 1
+set.row(LP_model,1,c(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)) 
+
+# Group 2
+set.row(LP_model,2,c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)) 
+
+# Group 3
+set.row(LP_model,3,c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)) 
+
+ # Group 4
+set.row(LP_model,4,c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0))
+
+# Group 5
+set.row(LP_model,5,c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)) 
+
+#Attendance constraint for group 1
+set.row(LP_model,6,c(8,11,17,27,6,27,28,20,19,2,6,5,21,12,23,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)) 
+
+#Attendance constraint for group 2
+set.row(LP_model,7,c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,11,17,27,6,27,28,20,19,2,6,5,21,12,23,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0))
+
+#Attendance constraint for group 3
+set.row(LP_model,8,c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,11,17,27,6,27,28,20,19,2,6,5,21,12,23,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0))
+
+#Attendance constraint for group 4
+set.row(LP_model,9,c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,11,17,27,6,27,28,20,19,2,6,5,21,12,23,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)) 
+
+#Attendance constraint for group 5
+set.row(LP_model,10,c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,11,17,27,6,27,28,20,19,2,6,5,21,12,23))
+
+#Experience constraint for group 1
+set.row(LP_model,11,c(18,70,57,17,94,94,13,83,47,55,55,24,76,18,41,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)) 
+
+#Experience constraint for group 2
+set.row(LP_model,12,c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,18,70,57,17,94,94,13,83,47,55,55,24,76,18,41,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)) 
+
+#Experience constraint for group 3
+set.row(LP_model,13,c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,18,70,57,17,94,94,13,83,47,55,55,24,76,18,41,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)) 
+
+#Experience constraint for group 4
+set.row(LP_model,14,c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,18,70,57,17,94,94,13,83,47,55,55,24,76,18,41,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)) 
+
+#Experience constraint for group 5
+set.row(LP_model,15,c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,18,70,57,17,94,94,13,83,47,55,55,24,76,18,41))
+
+#GPA constraint for group 1
+set.row(LP_model,16,c(17,81,38,33,60,60,12,29,58,63,51,51,53,56,87,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)) 
+
+#GPA constraint for group 2
+set.row(LP_model,17,c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,81,38,33,60,60,12,29,58,63,51,51,53,56,87,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+)) 
+
+#GPA constraint for group 3
+set.row(LP_model,18,c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,81,38,33,60,60,12,29,58,63,51,51,53,56,87,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)) 
+
+#GPA constraint for group 4
+set.row(LP_model,19,c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,81,38,33,60,60,12,29,58,63,51,51,53,56,87,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0))
+
+#GPA constraint for group 5
+set.row(LP_model,20,c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,81,38,33,60,60,12,29,58,63,51,51,53,56,87))
+
+#Student 1 constraint
+set.row(LP_model,21,c(1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0)) 
+
+#Student 2 constraint
+set.row(LP_model,22,c(0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0)) 
+
+#Student 3 constraint
+set.row(LP_model,23,c(0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0)) 
+
+#Student 4 constraint
+set.row(LP_model,24,c(0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0)) 
+
+#Student 5 constraint
+set.row(LP_model,25,c(0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0)) 
+
+#Student 6 constraint
+set.row(LP_model,26,c(0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0)) 
+
+#Student 7 constraint
+set.row(LP_model,27,c(0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0)) 
+
+#Student 8 constraint
+set.row(LP_model,28,c(0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0)) 
+
+#Student 9 constraint
+set.row(LP_model,29,c(0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0)) 
+
+#Student 10 constraint
+set.row(LP_model,30,c(0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0)) 
+
+#Student 11 constraint
+set.row(LP_model,31,c(0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0)) 
+
+#Student 12 constraint
+set.row(LP_model,32,c(0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0)) 
+
+#Student 13 constraint
+set.row(LP_model,33,c(0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0))
+
+#Student 14 constraint
+set.row(LP_model,34,c(0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0))
+
+#Student 15 constraint
+set.row(LP_model,35,c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1)) 
+```
+
+###Setting the right hand side values for the constraints in LP problem.
+```{r}
+rhs<-c(rep(3,5), rep(15,5), rep(51,5), rep(51,5), rep(1,15))
+set.rhs(LP_model,rhs)
+```
+
+### Setting the directions(Types) and bounds to the LP problem.
+```{r}
+set.constr.type(LP_model,c(rep("=",5),rep(">=", 15), rep("=",15)))
+set.bounds(LP_model,lower = rep(0,75))
+```
+
+### Setting the type to integer
+```{r}
+set.type(LP_model, 1:75 ,type = "integer") 
+```
+
+
+### Solving the Lp problem using the constraints and objective function.
+```{r}
+solve(LP_model)
+```
+
+### Getting the value of objective function.
+```{r}
+get.objective(LP_model)
+```
+
+### Getting the values of decision variables.
+```{r}
+round(get.variables(LP_model))
+```
+
+### Getting the values of constraints.
+```{r}
+get.constraints(LP_model)
+```
+
